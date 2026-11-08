@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المتاهة المسكونة - الهروب في الظلام</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- شاشة طلب الأذونات الأولية -->
+    <div id="permissionOverlay" class="overlay">
+        <div class="modal-box">
+            <h2>⚠️ تفعيل أذونات اللعبة</h2>
+            <p>لضمان تجربة أسطورية وتفاعلية، تحتاج اللعبة إلى الأذونات التالية:</p>
+            <ul class="perm-list">
+                <li>🔦 <strong>الكشاف (Flashlight):</strong> لإضاءة الطرق المظلمة في مراحل الكهوف.</li>
+                <li>📳 <strong>الاهتزاز (Vibration):</strong> للمؤثرات الحسية عند الدهس والإصابة.</li>
+                <li>🎤 <strong>الميكروفون (Microphone):</strong> للتحقق من الصمت في مراحل الهدوء.</li>
+                <li>📐 <strong>حساس الاتجاه (Orientation):</strong> للميل في مراحل الحبل والجسور.</li>
+            </ul>
+            <button class="btn green" onclick="requestGamePermissions()">تأكيد وتفعيل الأذونات 🚀</button>
+        </div>
+    </div>
+
+    <!-- القائمة الرئيسية -->
+    <div id="mainMenu" class="overlay hidden">
+        <h1 class="game-title">المتاهة المسكونة 🎮</h1>
+        <p class="author">تم التطوير بواسطة المبرمج: معاذ محمد عبد النبي</p>
+        <p class="subtitle">ملحمة الـ 200 مرحلة - إصدار المحترفين</p>
+
+        <div class="menu-buttons">
+            <button class="btn" onclick="startGame()">ابدأ المغامرة 🚀</button>
+
+            <!-- القوائم المنسدلة لاختيار المراحل والمتاجر -->
+            <button class="btn blue" onclick="openLevelSelect()">اختيار المرحلة (1 - 200) 🗺️</button>
+            <button class="btn gold" onclick="openShop()">المتجر والتطويرات 🛒</button>
+            <button class="btn grey" onclick="openSettings()">الإعدادات ⚙️</button>
+        </div>
+    </div>
+
+    <!-- شاشة اختيار المراحل -->
+    <div id="levelMenu" class="overlay hidden">
+        <div class="modal-box large">
+            <h2>اختيار المرحلة (1 - 200) 🗺️</h2>
+            <div id="levelGrid" class="level-grid"></div>
+            <button class="btn red" onclick="closeOverlay('levelMenu')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- شاشة المتجر -->
+    <div id="shopMenu" class="overlay hidden">
+        <div class="modal-box">
+            <h2>المتجر 🛒 (العملات: <span id="shopCoins">0</span> 🪙)</h2>
+            <div class="shop-item">
+                <span>شراء 5 رصاصات 🔫 (10 عملات)</span>
+                <button class="btn small" onclick="buyAmmo()">شراء</button>
+            </div>
+            <div class="shop-item">
+                <span>شراء قلب إضافي ❤️ (25 عملة)</span>
+                <button class="btn small" onclick="buyHeart()">شراء</button>
+            </div>
+            <div class="shop-item">
+                <span>ترقية سرعة الحركة ⚡ (50 عملة)</span>
+                <button class="btn small" onclick="upgradeSpeed()">ترقية</button>
+            </div>
+            <button class="btn red" onclick="closeOverlay('shopMenu')">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة الإعدادات -->
+    <div id="settingsMenu" class="overlay hidden">
+        <div class="modal-box">
+            <h2>الإعدادات ⚙️</h2>
+            <div class="setting-item">
+                <label>مستوى الصوت 🔊</label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="80" onchange="updateSettings()">
+            </div>
+            <div class="setting-item">
+                <label>مستوى السطوع ☀️</label>
+                <input type="range" id="brightnessSlider" min="50" max="150" value="100" onchange="updateSettings()">
+            </div>
+            <div class="setting-item">
+                <label>نمط الرؤية 🌙</label>
+                <select id="themeSelect" onchange="updateSettings()">
+                    <option value="auto">تلقائي (حسب نمط المرحلة)</option>
+                    <option value="dark">داكن دائماً</option>
+                    <option value="light">نهار دائماً</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label>تفعيل اهتزاز الجهاز 📳</label>
+                <input type="checkbox" id="vibeToggle" checked onchange="updateSettings()">
+            </div>
+            <button class="btn" onclick="closeOverlay('settingsMenu')">حفظ وإغلاق</button>
+        </div>
+    </div>
+
+    <!-- شاشة انتهاء المرحلة بنجاح -->
+    <div id="winMenu" class="overlay hidden">
+        <div class="modal-box">
+            <h2 style="color: #2ecc71;">تم اجتياز المرحلة بنجاح! 🎉</h2>
+            <p id="winStats">جمعت 0 عملات وحافظت على حياتك!</p>
+            <button class="btn green" onclick="nextLevel()">المرحلة التالية ⏩</button>
+            <button class="btn" onclick="showMainMenu()">القائمة الرئيسية 🏠</button>
+        </div>
+    </div>
+
+    <!-- لوحة اللعب Canvas -->
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="900" height="450"></canvas>
+    </div>
+
+    <!-- أزرار التحكم باللمس للشاشات الموبايل -->
+    <div id="controls">
+        <div class="d-pad">
+            <div class="ctrl-btn" id="btnLeft">◀</div>
+            <div class="ctrl-btn" id="btnRight">▶</div>
+        </div>
+        <div class="action-pad">
+            <div class="ctrl-btn jump" id="btnJump">▲</div>
+            <div class="ctrl-btn fire" id="btnShoot">🔥</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
